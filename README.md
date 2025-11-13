@@ -6,7 +6,7 @@ for the field and source, respectively, and $\rho$ is the lateral distance betwe
 points.
 
 $$
-Math: \int_0^\infty \tilde{G}(k_\rho; z|z') \, J_\nu(k_\rho \rho) \, J_\sigma(k_\rho \tau) \, k_\rho \, \mathrm{d}k_\rho
+\int_0^\infty \tilde{G}(k_\rho; z|z') \, J_\nu(k_\rho \rho) \, J_\sigma(k_\rho \tau) \, k_\rho \, \mathrm{d}k_\rho
 $$
 
 These integrals are often oscillatory and divergent, with poles (singularities)
