@@ -135,50 +135,45 @@ contains
     subroutine part_extrap(f, a, q, z, alpha, tol, kmax, u, val, error_estimate)
         procedure(integrable_function) :: f
         real(kind=wp), intent(in) :: a, q, z, alpha, tol, u
-        real(kind=wp) :: d
         integer, intent(in) :: kmax
+        complex(kind=wp), intent(out) :: val, error_estimate
+        real(kind=wp) :: d
         integer :: N, k, j
         real(kind=wp), allocatable :: X(:)
-        complex(kind=wp), allocatable :: R(:), partial_sums(:), partial_errors(:)
+        complex(kind=wp), allocatable :: R(:), partial_sums(:)
         complex(kind=wp) :: old0, old1, Gk, eta
-        complex(kind=wp), intent(out) :: val, error_estimate
 
         N = kmax + 2
-
         allocate(X(N))
         allocate(partial_sums(N))
-        allocate(partial_errors(N))
-
-        X = (0.0, 0.0)
         X(1) = a
         partial_sums(1) = (0.0, 0.0)
-        partial_errors(1) = (0.0, 0.0)
 
-        do k = 1, kmax + 1
+        do k = 1, N-1
             X(k + 1) = X(k) + q
-            val = quadde(f, 0.0_wp, a, 6, tol)
+            val = quadde(f, X(k), X(k + 1), 6, tol)
             partial_sums(k + 1) = val + partial_sums(k)
-            partial_errors(k + 1) = error_estimate + partial_errors(k)
         end do
+        print *, X(N)
 
         R = partial_sums
         old0 = (0.0, 0.0)
         old1 = (0.0, 0.0)
         val = (0.0, 0.0)
         error_estimate = (0.0, 0.0)
-        do k = 0, kmax
+        do k = 0, kmax + 1
             if (k > 0) then
                 ! analytical remainder estimates
                 Gk = -exp(-q * z) * (X(k) / X(k + 1))**alpha
             else
-                Gk = 0
+                Gk = 0.0
             end if
 
             ! Mosig-Michalski extrapolation
             do j = 1, k
                 d = X(k - j + 2) - X(k - j + 1)
-                eta = Gk / (1 + u * (j - 1) * d / X(k - j + 1))
-                R(k - j + 1) = (R(k - j + 2) - eta * R(k - j + 1)) / (1 - eta)
+                eta = Gk / (1.0 + u * (j - 1.0) * d / X(k - j + 1))
+                R(k - j + 1) = (R(k - j + 2) - eta * R(k - j + 1)) / (1.0 - eta)
             end do
             val = R(1)
 
@@ -193,7 +188,6 @@ contains
         deallocate(X)
         deallocate(R)
         deallocate(partial_sums)
-        deallocate(partial_errors)
     end subroutine
 
 end module Mosig_Michalski_PE
@@ -204,7 +198,7 @@ program test_mosig_michalski
     use Mosig_Michalski_PE
     implicit none
 
-    real(kind=wp), parameter :: pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286198_wp
+    real(kind=wp), parameter :: PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286198_wp
     integer, parameter :: N = 20
     real(kind=wp) :: v, p, a, q, tol, alpha, u, z
     complex(kind=wp) :: series_term, partial_sums(N), extrapolated_sum, val, error_estimate
@@ -214,12 +208,12 @@ program test_mosig_michalski
     print *, "Testing mosig_michalski_PE..."
 
     ! Series acceleration
-    u = 1.0_wp
+    u = 1.0
     extrapolated_sum = (0.0, 0.0)
 
     ! Example 1
     do i = 0, N-1
-        series_term = (-1.0_wp)**i / sqrt(real(i+1))
+        series_term = (-1.0_wp)**real(i) / sqrt(real(i+1))
         if (i == 0) then
             partial_sums(i + 1) = series_term
         else
@@ -254,14 +248,14 @@ program test_mosig_michalski
     end do
     extrapolated_sum = mosig_michalski(partial_sums, u)
     is_nan = ieee_is_nan(real(extrapolated_sum)) .or. ieee_is_nan(aimag(extrapolated_sum))
-    if (abs(real(extrapolated_sum) - (pi**2.0_wp / 6.0_wp)) > 1e-2 .or. is_nan) stop "Test 3 failed"
+    if (abs(real(extrapolated_sum) - (PI**2.0_wp / 6.0_wp)) > 1e-2 .or. is_nan) stop "Test 3 failed"
 
 
     ! Partition-Extrapolation
     v = 2.0
     p = 1.0
     a = 5.13562
-    q = pi / p
+    q = PI / p
     z = 0.0
     tol = 1e-9
     alpha = 1.0 / 2.0 - v
@@ -281,17 +275,16 @@ contains
         real(wp), intent(in) :: x
         real(wp) :: ZR, ZI, CYR, CYI, FNU
         complex(wp) :: y, besselj
-        integer :: IERR, N, NZ, KODE
-        N = 1
+        integer :: IERR, Nt, NZ, KODE
+        Nt = 1
         NZ = 1
         KODE = 1  ! no scaling
         FNU = v
         ZR = real(x)
         ZI = 0.0
-        call ZBESJ(ZR, ZI, FNU, KODE, N, CYR, CYI, NZ, IERR)
+        call ZBESJ(ZR, ZI, FNU, KODE, Nt, CYR, CYI, NZ, IERR)
         if (IERR /= 0) then
             print *, "IERR =", IERR
-            stop "ZBESJ error"
         end if
         besselj = cmplx(CYR, CYI, kind=wp)
         y = exp(-x * z) * besselj * x**v

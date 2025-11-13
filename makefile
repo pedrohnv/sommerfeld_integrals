@@ -12,7 +12,7 @@ quadde_test: quadde_module
 	gfortran -o a.out quadde_test.f90 quadde_module.o && ./a.out
 
 mosig_michalski: quadde_module
-	gfortran -g -o a.out mosig_michalski_PE.f90 quadde_module.o $(slateclib) && ./a.out
+	gfortran -o a.out mosig_michalski_PE.f90 quadde_module.o $(slateclib) && ./a.out
 
 slatec:
 	cd slatec && make FC=gfortran && cd ..

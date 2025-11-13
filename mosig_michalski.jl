@@ -155,7 +155,7 @@ function part_extrap(fun::Function, a, q, z, alpha, tol = 1e-6, kmax = 10, u = 1
     local old1 = 0.0
     local val = 0.0
     local error_estimate = 0.0
-    for k = 0:kmax
+    for k = 0 : kmax + 1
         if k > 0
             # analytical remainder estimates
             Gk = -exp(-q * z) * (X[k] / X[k + 1])^alpha
