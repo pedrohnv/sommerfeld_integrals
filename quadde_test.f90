@@ -1,8 +1,5 @@
 ! Double exponential quadrature integration Test.
 !
-! compile and run with:
-!     gfortran -c quadde_module.f90 && gfortran -o a.out quadde_test.f90 quadde_module.o && ./a.out
-!
 ! # References
 ! - [1] Bailey, David H., Karthik Jeyabalan, and Xiaoye S. Li. “A comparison of three high-precision quadrature schemes.” Experimental Mathematics 14.3 (2005): 317-329.
 ! - [2] Vanherck, Joren, Bart Sorée, and Wim Magnus. “Tanh-sinh quadrature for single and multiple integration using floating-point arithmetic.” arXiv preprint arXiv:2007.15057 (2020).
@@ -21,6 +18,8 @@ program test_quadde
 
     POS_INF = ieee_value(1.0_wp, ieee_positive_inf)
     NEG_INF = ieee_value(-1.0_wp, ieee_negative_inf)
+
+    print *, "Testing quadde..."
 
     val = quadde(f1, -1.0_wp, 1.0_wp, 6, tol)
     print *, "Test 1:", val
@@ -50,35 +49,35 @@ contains
 
     function f1(x) result(y)
         real(wp), intent(in) :: x
-        real(wp) :: y
+        complex(wp) :: y
         y = 1.0 / ( (x - 2.0) * (1.0 - x)**0.25 * (1.0 + x)**0.75 )
     end function
 
     
     function f2(x) result(y)
         real(wp), intent(in) :: x
-        real(wp) :: y
+        complex(wp) :: y
         y = cos(PI * x) / sqrt(1.0 - x)
     end function
 
 
     function f3(x) result(y)
         real(wp), intent(in) :: x
-        real(wp) :: y
+        complex(wp) :: y
         y = exp(-1.0 - x) / (1.0 + x)
     end function
 
 
     function f4(x) result(y)
         real(wp), intent(in) :: x
-        real(wp) :: y
+        complex(wp) :: y
         y = 1.0 / (1.0 + x**2.0)**(5.0 / 4.0)
     end function
 
     
     function f5(x) result(y)
         real(wp), intent(in) :: x
-        real(wp) :: y
+        complex(wp) :: y
         y = 1.0 / (1.0 + x**4.0)
     end function
 

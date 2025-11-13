@@ -1,8 +1,5 @@
 ! Double exponential quadrature integration.
 !
-! Compile with:
-!    gfortran -c quadde_module.f90
-!
 ! # References
 ! - [1] Bailey, David H., Karthik Jeyabalan, and Xiaoye S. Li. “A comparison of three high-precision quadrature schemes.” Experimental Mathematics 14.3 (2005): 317-329.
 ! - [2] Vanherck, Joren, Bart Sorée, and Wim Magnus. “Tanh-sinh quadrature for single and multiple integration using floating-point arithmetic.” arXiv preprint arXiv:2007.15057 (2020).
@@ -20,7 +17,7 @@ module quadde_module
         function integrable_function(x) result(y)
             import wp
             real(wp), intent(in) :: x
-            real(wp) :: y
+            complex(wp) :: y
         end function integrable_function
     end interface
 
@@ -29,10 +26,12 @@ contains
     !> Double exponential quadrature of f(x) in the interval [a, b] with at most
     !> n levels (more than 6 usually leads to no improvement on convergence)
     !> with requested error eps.
-    function quadde(f, a, b, n, eps) result(val)
+    function quadde(f, a, b, n, eps) result(v)
         procedure(integrable_function) :: f
         integer :: n, k, mode
-        real(wp) :: a, b, eps, tol, val, c, d, s, e, h, p, q, fp, fm, v, t, r, x, w, u, eh, y, sign
+        real(wp) :: a, b, c, d, e, h, eps, tol, t, r, x, w, u, eh, sign
+        complex(wp) :: p, q, s, v, y, fp, fm
+        logical :: is_finite
 
         if (eps < 0.0) stop "eps must be positive"
         if (n < 0) stop "n must be positive"
@@ -45,9 +44,9 @@ contains
         h = 2.0
 
         if (b < a) then  ! swap bounds
-            v = b
+            x = b
             b = a
-            a = v
+            a = x
             sign = -1.0
         end if
 
@@ -57,19 +56,19 @@ contains
         else if (ieee_is_finite(a)) then
             mode = 1  ! exp-sinh
             c = a
-            v = a + d
+            x = a + d
         else if (ieee_is_finite(b)) then
             mode = 1  ! exp-sinh
             d = -d
             sign = -sign
             c = b
-            v = b + d
+            x = b + d
         else
             mode = 2  ! sinh-sinh
-            v = 0.0
+            x = 0.0
         end if
 
-        s = f(v)
+        s = f(x)
         do k = 0, n
             p = 0.0
             fp = 0.0
@@ -90,12 +89,14 @@ contains
 
                     if (a + x > a) then  ! too close to a then reuse previous fp
                         y = f(a + x)
-                        if (ieee_is_finite(y)) fp = y
+                        is_finite = ieee_is_finite(real(y)) .and. ieee_is_finite(aimag(y))
+                        if (is_finite) fp = y
                     end if
 
                     if (b - x < b) then  ! too close to b then reuse previous fm
                         y = f(b - x)
-                        if (ieee_is_finite(y)) fm = y
+                        is_finite = ieee_is_finite(real(y)) .and. ieee_is_finite(aimag(y))
+                        if (is_finite) fm = y
                     end if
 
                     q = w * (fp + fm)
@@ -114,17 +115,18 @@ contains
                         x = c + d / r
                         if (abs(x - c) < epsilon(x)) exit  ! x hit the finite endpoint
                         y = f(x)
-                        if (ieee_is_finite(y)) q = q + y / w
+                        is_finite = ieee_is_finite(real(y)) .and. ieee_is_finite(aimag(y))
+                        if (is_finite) q = q + y / w
                     else  ! sinh-sinh
                         r = (r - 1.0 / r) * 0.5  ! sinh(sinh(j*h))
                         w = (w + 1.0 / w) * 0.5  ! cosh(sinh(j*h))
                         x = c - d * r
                         y = f(x)
-                        if (ieee_is_finite(y)) q = q + y * w
+                        if (is_finite) q = q + y * w
                     end if
                     x = c + d * r
                     y = f(x)
-                    if (ieee_is_finite(y)) q = q + y * w
+                    if (is_finite) q = q + y * w
                     q = q * (t + 0.25 / t)  ! cosh(j*h)
                     p = p + q
                     t = t * eh
@@ -136,7 +138,7 @@ contains
             if (abs(v) <= tol * abs(s)) exit
         end do
         e = abs(v) / (abs(s) + eps)  ! TODO return or print e
-        val = sign * d * s * h  ! result with estimated relative error e
+        v = sign * d * s * h  ! result with estimated relative error e
     end function quadde
 
 end module

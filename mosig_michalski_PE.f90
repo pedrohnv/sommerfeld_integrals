@@ -1,6 +1,3 @@
-! compile and run with:
-!     gfortran -c quadde_module.f90 && gfortran -o a.out mosig_michalski_PE.f90 quadde_module.o && ./a.out
-!
 !> Uso do algoritmo de Mosig-Michalski para computar integrais de Sommerfeld.
 !>
 !> Dada a seguinte integral que considera uma corrente em uma região circular de
@@ -209,11 +206,12 @@ program test_mosig_michalski
     real(kind=wp), parameter :: pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286198_wp
     integer, parameter :: N = 20
     real(kind=wp) :: v, p, a, q, tol, alpha, u
-    complex(kind=wp) :: series_term, partial_sums(N), extrapolated_sum, z, val
+    complex(kind=wp) :: series_term, partial_sums(N), extrapolated_sum, z
     integer :: i, kmax
 
-    ! Series acceleration
+    print *, "Testing mosig_michalski_PE..."
 
+    ! Series acceleration
     u = 1.0_wp
     extrapolated_sum = (0.0, 0.0)
 
@@ -268,7 +266,7 @@ program test_mosig_michalski
     !val = part_extrap(f, a, q, z, alpha, tol, kmax, u, val, error_estimate)
     !if (abs(-10.07948621951323 - val) > tol) stop "Partition-Extrapolation failed"
 
-    print *, "All tests passed."
+    print *, "All tests passed!"
 
 contains
 
