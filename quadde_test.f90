@@ -6,7 +6,7 @@
 ! - [3] van Engelen, Robert A. “Improving the Double Exponential Quadrature Tanh-Sinh, Sinh-Sinh and Exp-Sinh Formulas.” https://www.genivia.com/files/qthsh.pdf
 ! - [4] Takahasi, Hidetosi, and Masatake Mori. “Double exponential formulas for numerical integration.” Publications of the Research Institute for Mathematical Sciences 9.3 (1974): 721-741.
 
-program test_quadde
+program quadde_test
     use quadde_module
     use, intrinsic :: ieee_arithmetic
     use, intrinsic :: iso_fortran_env, only: wp => real64  ! working precision
@@ -100,4 +100,4 @@ contains
         y = x**(-2.0)
     end function
 
-end program test_quadde
+end program quadde_test
