@@ -38,7 +38,7 @@ contains
     !> ```Fortran
     !> use Mosig_Michalski_PE
     !> implicit none
-    !> real(kind=wp), parameter :: pi = 3.14159265358979323846
+    !> real(kind=wp), parameter :: pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286198_wp
     !> integer, parameter :: N = 20
     !> real(kind=wp) :: u
     !> complex(kind=wp) :: series_term, partial_sums(N), extrapolated_sum
@@ -206,7 +206,7 @@ program test_mosig_michalski
     use Mosig_Michalski_PE
     implicit none
 
-    real(kind=wp), parameter :: pi = 3.14159265358979323846
+    real(kind=wp), parameter :: pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286198_wp
     integer, parameter :: N = 20
     real(kind=wp) :: v, p, a, q, tol, alpha, u
     complex(kind=wp) :: series_term, partial_sums(N), extrapolated_sum, z, val
