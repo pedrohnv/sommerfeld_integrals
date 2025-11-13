@@ -16,7 +16,7 @@ program test_quadde
     implicit none
 
     real(wp), parameter :: tol = 1e-6
-    real(wp), parameter :: PI = 4.0_wp * ATAN(1.0_wp)
+    real(wp), parameter :: PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286198_wp
     real(wp) :: val, POS_INF, NEG_INF
 
     POS_INF = ieee_value(1.0_wp, ieee_positive_inf)
