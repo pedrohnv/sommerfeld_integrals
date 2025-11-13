@@ -53,6 +53,7 @@ contains
         if (ieee_is_finite(a) .and. ieee_is_finite(b)) then
             c = (a + b) * 0.5
             d = (b - a) * 0.5
+            x = c
         else if (ieee_is_finite(a)) then
             mode = 1  ! exp-sinh
             c = a

@@ -48,6 +48,11 @@ program test_quadde
     is_nan = ieee_is_nan(real(val)) .or. ieee_is_nan(aimag(val))
     if (abs(2.2214 - val) > 1e-4 .or. is_nan) stop "Test 5 failed"
 
+    val = quadde(f6, 0.1_wp, 1.0_wp, 6, tol)
+    print *, "Test 6:", val
+    is_nan = ieee_is_nan(real(val)) .or. ieee_is_nan(aimag(val))
+    if (abs(9.0_wp - val) > 1e-4 .or. is_nan) stop "Test 6 failed"
+
     print *, "All tests passed!"
 
 contains
@@ -60,7 +65,7 @@ contains
         y = 1.0 / ( (x - 2.0) * (1.0 - x)**0.25 * (1.0 + x)**0.75 )
     end function
 
-    
+
     function f2(x) result(y)
         real(wp), intent(in) :: x
         complex(wp) :: y
@@ -81,11 +86,18 @@ contains
         y = 1.0 / (1.0 + x**2.0)**(5.0 / 4.0)
     end function
 
-    
+
     function f5(x) result(y)
         real(wp), intent(in) :: x
         complex(wp) :: y
         y = 1.0 / (1.0 + x**4.0)
+    end function
+
+
+    function f6(x) result(y)
+        real(wp), intent(in) :: x
+        complex(wp) :: y
+        y = x**(-2.0)
     end function
 
 end program test_quadde

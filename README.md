@@ -14,6 +14,14 @@ on the real axis at $a_1$, $a_2$, etc. To compute the tail of this integral more
 efficiently, partitioning and extrapolation (via the Mosig-Michalski algorithm)
 are applied to the infinite series that approximates the integral.
 
+Tested with `GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0`
+```bash
+git clone https://github.com/pedrohnv/sommerfeld_integrals
+cd sommerfeld_integrals
+git clone https://github.com/pedrohnv/slatec
+make
+```
+
 # References
 - MICHALSKI, Krzysztof A.; MOSIG, Juan R. Efficient computation of Sommerfeld integral tails – methods and algorithms. Journal of Electromagnetic Waves and Applications, v. 30, n. 3, p. 281-317, 2016.
 - MICHALSKI, K. A. On the efficient evaluation of integral arising in the sommerfeld halfspace problem. In: IEE Proceedings H (Microwaves, Antennas and Propagation). IET Digital Library, 1985. p. 312-318.

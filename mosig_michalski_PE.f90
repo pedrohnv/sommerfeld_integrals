@@ -154,13 +154,13 @@ contains
             val = quadde(f, X(k), X(k + 1), 6, tol)
             partial_sums(k + 1) = val + partial_sums(k)
         end do
-        print *, X(N)
 
         R = partial_sums
         old0 = (0.0, 0.0)
         old1 = (0.0, 0.0)
         val = (0.0, 0.0)
         error_estimate = (0.0, 0.0)
+
         do k = 0, kmax + 1
             if (k > 0) then
                 ! analytical remainder estimates
@@ -250,7 +250,6 @@ program test_mosig_michalski
     is_nan = ieee_is_nan(real(extrapolated_sum)) .or. ieee_is_nan(aimag(extrapolated_sum))
     if (abs(real(extrapolated_sum) - (PI**2.0_wp / 6.0_wp)) > 1e-2 .or. is_nan) stop "Test 3 failed"
 
-
     ! Partition-Extrapolation
     v = 2.0
     p = 1.0
@@ -261,11 +260,12 @@ program test_mosig_michalski
     alpha = 1.0 / 2.0 - v
     kmax = 10
     u = 2.0
+    ! It is safe to call f(x) onward
     call part_extrap(f, a, q, z, alpha, tol, kmax, u, val, error_estimate)
     print *, "I =", val
     print *, "E =", error_estimate
     is_nan = ieee_is_nan(real(val)) .or. ieee_is_nan(aimag(val))
-    if (abs(-10.07948621951323 - val) > tol .or. is_nan) stop "Partition-Extrapolation failed"
+    if (abs(-10.07948621951323 - val) > 1e-6 .or. is_nan) stop "Partition-Extrapolation failed"
 
     print *, "All tests passed!"
 
@@ -275,14 +275,15 @@ contains
         real(wp), intent(in) :: x
         real(wp) :: ZR, ZI, CYR, CYI, FNU
         complex(wp) :: y, besselj
-        integer :: IERR, Nt, NZ, KODE
-        Nt = 1
+        integer :: IERR, NT, NZ, KODE
+        NT = 1
         NZ = 1
         KODE = 1  ! no scaling
         FNU = v
-        ZR = real(x)
+        ZR = x
         ZI = 0.0
-        call ZBESJ(ZR, ZI, FNU, KODE, Nt, CYR, CYI, NZ, IERR)
+        IERR = 0
+        call ZBESJ(ZR, ZI, FNU, KODE, NT, CYR, CYI, NZ, IERR)
         if (IERR /= 0) then
             print *, "IERR =", IERR
         end if
