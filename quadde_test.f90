@@ -14,7 +14,9 @@ program test_quadde
 
     real(wp), parameter :: tol = 1e-6
     real(wp), parameter :: PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406286198_wp
-    real(wp) :: val, POS_INF, NEG_INF
+    real(wp) :: POS_INF, NEG_INF
+    complex(wp) :: val
+    logical :: is_nan
 
     POS_INF = ieee_value(1.0_wp, ieee_positive_inf)
     NEG_INF = ieee_value(-1.0_wp, ieee_negative_inf)
@@ -23,23 +25,28 @@ program test_quadde
 
     val = quadde(f1, -1.0_wp, 1.0_wp, 6, tol)
     print *, "Test 1:", val
-    if (abs(-1.9490 - val) > 1e-4 .or. ieee_is_nan(val)) stop "Test 1 failed"
+    is_nan = ieee_is_nan(real(val)) .or. ieee_is_nan(aimag(val))
+    if (abs(-1.9490 - val) > 1e-4 .or. is_nan) stop "Test 1 failed"
 
     val = quadde(f2, -1.0_wp, 1.0_wp, 6, tol)
     print *, "Test 2:", val
-    if (abs(-0.69049 - val) > 1e-4 .or. ieee_is_nan(val)) stop "Test 2 failed"
+    is_nan = ieee_is_nan(real(val)) .or. ieee_is_nan(aimag(val))
+    if (abs(-0.69049 - val) > 1e-4 .or. is_nan) stop "Test 2 failed"
 
     val = quadde(f3, 0.0_wp, POS_INF, 6, tol)
     print *, "Test 3:", val
-    if (abs(0.21938 - val) > 1e-4) stop "Test 3 failed"
+    is_nan = ieee_is_nan(real(val)) .or. ieee_is_nan(aimag(val))
+    if (abs(0.21938 - val) > 1e-4 .or. is_nan) stop "Test 3 failed"
 
     val = quadde(f4, NEG_INF, POS_INF, 6, tol)
     print *, "Test 4:", val
-    if (abs(2.3962 - val) > 1e-4 .or. ieee_is_nan(val)) stop "Test 4 failed"
+    is_nan = ieee_is_nan(real(val)) .or. ieee_is_nan(aimag(val))
+    if (abs(2.3962 - val) > 1e-4 .or. is_nan) stop "Test 4 failed"
 
     val = quadde(f5, NEG_INF, POS_INF, 6, tol)
     print *, "Test 5:", val
-    if (abs(2.2214 - val) > 1e-4 .or. ieee_is_nan(val)) stop "Test 5 failed"
+    is_nan = ieee_is_nan(real(val)) .or. ieee_is_nan(aimag(val))
+    if (abs(2.2214 - val) > 1e-4 .or. is_nan) stop "Test 5 failed"
 
     print *, "All tests passed!"
 
