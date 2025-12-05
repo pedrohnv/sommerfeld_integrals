@@ -130,6 +130,10 @@ double f5(double x) {
     return 1.0 / (1.0 + pow(x, 4.0));
 }
 
+double f6(double x) {
+    return 1.0 / pow(x, 2.0);
+}
+
 
 int main() {
     double tol = 1e-6;
@@ -164,6 +168,12 @@ int main() {
     printf("Test 5: %.17g\n", val);
     if (fabs(2.2214 - val) > 1e-4) {
         return 5;
+    }
+    
+    val = quadde(f6, 0.1, 1.0, 6, tol);
+    printf("Test 6: %.17g\n", val);
+    if (fabs(9.0 - val) > 1e-4) {
+        return 6;
     }
 
     printf("All Tests passed!\n");
